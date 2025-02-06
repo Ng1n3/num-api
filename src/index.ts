@@ -5,6 +5,7 @@ type apiData = {
   number: number;
   is_prime: boolean;
   is_perfect: boolean;
+  properties: string[];
   digit_sum: number;
   fun_fact: string;
 };
@@ -55,6 +56,34 @@ async function fun_fact(num: number): Promise<string> {
   }
 }
 
+function isArmstrong(num: number): boolean {
+  const digits = String(num).split('');
+  const length = digits.length;
+  const sum = digits.reduce(
+    (acc, digit) => acc + Math.pow(Number(digit), length),
+    0
+  );
+  return sum === num;
+}
+
+function getProperties(num: number): string[] {
+  const properties: string[] = [];
+
+  // Check if the number is Armstrong
+  if (isArmstrong(num)) {
+    properties.push('armstrong');
+  }
+
+  // Check if the number is odd or even
+  if (num % 2 !== 0) {
+    properties.push('odd');
+  } else {
+    properties.push('even');
+  }
+
+  return properties;
+}
+
 app.get('/', (req: Request, res: Response) => {
   res.send({
     status: 'OK',
@@ -71,7 +100,7 @@ app.get(
     // Check if the input is invalid (NaN or not a valid integer)
     if (isNaN(number) || !Number.isInteger(Number(numberInput))) {
       return res.status(400).json({
-        number: numberInput,
+        number: 'alphabet',
         error: true,
       });
     }
@@ -80,6 +109,7 @@ app.get(
       number,
       is_prime: isPrime(number),
       is_perfect: is_perfect(number),
+      properties: getProperties(number),
       digit_sum: sumOfDigits(number),
       fun_fact: await fun_fact(number),
     };

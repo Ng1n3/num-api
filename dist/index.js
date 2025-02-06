@@ -1,12 +1,3 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 import cors from 'cors';
 import express from 'express';
 const app = express();
@@ -40,21 +31,19 @@ function sumOfDigits(num) {
         .map(Number)
         .reduce((acc, digit) => acc + digit, 0);
 }
-function fun_fact(num) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const baseUrl = `http://numbersapi.com/${num}/math`;
-        try {
-            const response = yield fetch(baseUrl);
-            if (!response.ok) {
-                throw new Error('Failed to fetch fun fact');
-            }
-            const fact = yield response.text();
-            return fact;
+async function fun_fact(num) {
+    const baseUrl = `http://numbersapi.com/${num}/math`;
+    try {
+        const response = await fetch(baseUrl);
+        if (!response.ok) {
+            throw new Error('Failed to fetch fun fact');
         }
-        catch (error) {
-            throw new Error(`There was an error fetching fun fact for ${num}`);
-        }
-    });
+        const fact = await response.text();
+        return fact;
+    }
+    catch (error) {
+        throw new Error(`There was an error fetching fun fact for ${num}`);
+    }
 }
 function isArmstrong(num) {
     const digits = String(num).split('');
@@ -83,7 +72,7 @@ app.get('/', (req, res) => {
         message: 'Server is up and running!',
     });
 });
-app.get('/api/classify-number', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+app.get('/api/classify-number', async (req, res) => {
     const numberInput = req.query.number;
     const number = parseInt(numberInput, 10);
     // Check if the input is invalid (NaN or not a valid integer)
@@ -99,10 +88,10 @@ app.get('/api/classify-number', (req, res, next) => __awaiter(void 0, void 0, vo
         is_perfect: is_perfect(number),
         properties: getProperties(number),
         digit_sum: sumOfDigits(number),
-        fun_fact: yield fun_fact(number),
+        fun_fact: await fun_fact(number),
     };
     res.json(result);
-}));
+});
 app.get('*', (req, res) => {
     res.status(404).send({ message: 'Route not found' });
 });

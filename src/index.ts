@@ -1,14 +1,14 @@
 import cors from 'cors';
 import express, { Application, NextFunction, Request, Response } from 'express';
 
-type apiData = {
+interface apiData {
   number: number;
   is_prime: boolean;
   is_perfect: boolean;
   properties: string[];
   digit_sum: number;
   fun_fact: string;
-};
+}
 
 const app: Application = express();
 const PORT = process.env.PORT || 5000;
@@ -91,9 +91,13 @@ app.get('/', (req: Request, res: Response) => {
   });
 });
 
+interface ClassifyNumberQuery {
+  number?: string;
+}
+
 app.get(
   '/api/classify-number',
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response): Promise<any> => {
     const numberInput = req.query.number as string;
     const number = parseInt(numberInput, 10);
 
